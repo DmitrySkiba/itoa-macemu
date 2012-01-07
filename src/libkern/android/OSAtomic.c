@@ -17,15 +17,18 @@
 #include <libkern/OSAtomic.h>
 #include <sys/atomics.h>
 #include "android_atomic.h"
-#include "futexlock.h"
 
-/************************************************ Memory barrier */
+/*
+ * Memory barrier
+ */
 
 void OSMemoryBarrier(void) {
     /*noop*/
 }
 
-/************************************************ Arithmetic functions */
+/*
+ * Arithmetic functions
+ */
 
 int32_t OSAtomicAdd32(int32_t value,volatile int32_t* target) {
     return android_atomic_add(value,target) + value;
@@ -59,7 +62,9 @@ int32_t OSAtomicDecrement32Barrier(volatile int32_t* target) {
     OSAtomicAdd32Barrier(-1,target);
 }
 
-/************************************************ Bitwise functions */
+/*
+ * Bitwise functions
+ */
 
 int32_t OSAtomicAnd32Orig(uint32_t value,volatile uint32_t* target) {
     return android_atomic_and(value,target);
@@ -104,7 +109,9 @@ int32_t OSAtomicXor32Barrier(uint32_t value,volatile uint32_t* target) {
     return OSAtomicXor32OrigBarrier(value,target) ^ value;
 }
 
-/************************************************ Compare-and-swap functions */
+/*
+ * Compare-and-swap functions
+ */
 
 int OSAtomicCompareAndSwapInt(int oldValue,int newValue,volatile int* target) {
     return !android_atomic_cmpxchg(oldValue,newValue,target);
@@ -140,7 +147,9 @@ int OSAtomicCompareAndSwap32Barrier(int32_t oldValue,int32_t newValue,volatile i
     return OSAtomicCompareAndSwapIntBarrier((int)oldValue,(int)newValue,(volatile int*)target);
 }
 
-/************************************************ Bit functions */
+/*
+ * Bit functions
+ */
 
 /*
 int OSAtomicTestAndSet(uint32_t bit,volatile void* target);
@@ -149,20 +158,9 @@ int OSAtomicTestAndClear(uint32_t bit,volatile void* target);
 int OSAtomicTestAndClearBarrier(uint32_t bit,volatile void* target);
 */
 
-/************************************************ Spinlock */
-
-void OSSpinLockLock(volatile OSSpinLock* lock) {
-    futexlock_lock(lock);
-}
-void OSSpinLockUnlock(volatile OSSpinLock* lock) {
-    futexlock_unlock(lock);
-}
-
-int OSSpinLockTry(volatile OSSpinLock* lock) {
-    return futexlock_trylock(lock);
-}
-
-/************************************************ Atomic queue */
+/*
+ * Atomic queue
+ */
 
 /*
 void OSAtomicEnqueue(OSQueueHead* list,void* item,size_t offset);

@@ -18,20 +18,24 @@
 #define _OSATOMIC_INCLUDED_
 
 #include <stdint.h>
-#include <sys/cdefs.h>
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/* 64-bit version are not supported for now. */
-
-/************************************************ Memory barrier
+/*
+ * Memory barrier
  */
+
 void OSMemoryBarrier(void);
 
 
-/************************************************ Arithmetic functions
- * Return new value.
+/*
+ * Arithmetic functions
+ *
+ * All functions return new value.
  */
+
 int32_t OSAtomicAdd32(int32_t value,volatile int32_t* target);
 int32_t OSAtomicIncrement32(volatile int32_t* target);
 int32_t OSAtomicDecrement32(volatile int32_t* target);
@@ -50,10 +54,12 @@ int64_t OSAtomicIncrement64Barrier(volatile int64_t* target);
 int64_t OSAtomicDecrement64Barrier(volatile int64_t* target);
 */
 
-
-/************************************************ Bitwise functions
- * 'Orig' version return original value,plain version return new value.
+/*
+ * Bitwise functions
+ *
+ * 'Orig' functions return original value, others return new value.
  */
+
 int32_t OSAtomicAnd32(uint32_t value,volatile uint32_t* target);
 int32_t OSAtomicOr32(uint32_t value,volatile uint32_t* target);
 int32_t OSAtomicXor32(uint32_t value,volatile uint32_t* target);
@@ -70,10 +76,12 @@ int32_t OSAtomicAnd32OrigBarrier(uint32_t value,volatile uint32_t* target);
 int32_t OSAtomicOr32OrigBarrier(uint32_t value,volatile uint32_t* target);
 int32_t OSAtomicXor32OrigBarrier(uint32_t value,volatile uint32_t* target);
 
-
-/************************************************ Compare-and-swap functions
- * Return 1 of swap occured,0 otherwise.
+/*
+ * Compare-and-swap functions
+ *
+ * Functions return 1 if swap occurred, 0 otherwise.
  */
+
 int OSAtomicCompareAndSwapInt(int oldValue,int newValue,volatile int* target);
 int OSAtomicCompareAndSwapPtr(void* oldValue,void* newValue,void* volatile* target);
 int OSAtomicCompareAndSwapLong(long oldValue,long newValue,volatile long* target);
@@ -89,12 +97,13 @@ int OSAtomicCompareAndSwap64(int64_t oldValue,int64_t newValue,volatile int64_t*
 int OSAtomicCompareAndSwap64Barrier(int64_t oldValue,int64_t newValue,volatile int64_t* target);
 */
 
-
-/************************************************ Bit functions
- * Lowest bit has index of 1,bit/8 specifies byte in target.
- * Return original value of the bit (1 or 0).
- * Not yet implemented.
+/*
+ * Bit functions
+ *
+ * Lowest bit has index of 1, 'bit/8' specifies byte in target.
+ * Functions return original value of the bit (1 or 0).
  */
+
 /*
 int OSAtomicTestAndSet(uint32_t bit,volatile void* target);
 int OSAtomicTestAndClear(uint32_t bit,volatile void* target);
@@ -103,25 +112,29 @@ int OSAtomicTestAndSetBarrier(uint32_t bit,volatile void* target);
 int OSAtomicTestAndClearBarrier(uint32_t bit,volatile void* target);
 */
 
-
-/************************************************ Spinlock
- * OSSpinLockTry returns 1 on success,0 otherwise.
+/*
+ * Spinlock
  */
+
 typedef int32_t OSSpinLock;
 
 #define OS_SPINLOCK_INIT 0
 
+/* OSSpinLockTry returns 1 on success, 0 otherwise. */
 int OSSpinLockTry(volatile OSSpinLock* lock);
+    
 void OSSpinLockLock(volatile OSSpinLock* lock);
 void OSSpinLockUnlock(volatile OSSpinLock* lock);
 
-
-/************************************************ Atomic queue
+/*
+ * Atomic queue
+ *
  * Not yet implemented.
  */
+
 /*
 typedef struct {
-    ...
+    ???
 } OSQueueHead;
 
 #define OS_ATOMIC_QUEUE_INIT {...}
@@ -130,6 +143,8 @@ void OSAtomicEnqueue(OSQueueHead* list,void* item,size_t offset);
 void* OSAtomicDequeue(OSQueueHead* list,size_t offset);
 */
 
-__END_DECLS
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _OSATOMIC_INCLUDED_ */

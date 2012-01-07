@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-#include "futexlock.h"
+#include <libkern/OSAtomic.h>
 #include <sys/atomics.h>
 
 /*
  * Lock a non-recursive mutex.
  *
- * As noted above, there are three states:
+ * There are three states:
  *   0 (unlocked, no contention)
  *   1 (locked, no contention)
  *   2 (locked, contention)
@@ -30,8 +30,7 @@
  * "type" value is zero, so the only bits that will be set are the ones in
  * the lock state field.
  */
-__private_extern__
-void futexlock_lock(futexlock_t* lock) {
+void OSSpinLockLock(volatile OSSpinLock* lock) {
     /*
      * The common case is an unlocked mutex, so we begin by trying to
      * change the lock's state from 0 to 1.  __atomic_cmpxchg() returns 0
@@ -60,8 +59,7 @@ void futexlock_lock(futexlock_t* lock) {
     }
 }
 
-__private_extern__
-int futexlock_trylock(futexlock_t* lock) {
+int OSSpinLockTry(volatile OSSpinLock* lock) {
     return __atomic_cmpxchg(0, 1, lock ) == 0;
 }
 
@@ -69,8 +67,7 @@ int futexlock_trylock(futexlock_t* lock) {
  * Release a non-recursive mutex.  The caller is responsible for determining
  * that we are in fact the owner of this lock.
  */
-__private_extern__
-void futexlock_unlock(futexlock_t* lock) {
+void OSSpinLockUnlock(volatile OSSpinLock* lock) {
     /*
      * The mutex value will be 1 or (rarely) 2.  We use an atomic decrement
      * to release the lock.  __atomic_dec() returns the previous value;
